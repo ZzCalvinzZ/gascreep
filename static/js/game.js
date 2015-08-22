@@ -11,17 +11,20 @@ $( document ).ready(function() {
 	var bookText = PIXI.Texture.fromImage('static/img/book.png');
 	var roomText = PIXI.Texture.fromImage('static/img/room.png');
 	var dresserText = PIXI.Texture.fromImage('static/img/dresser.png');
+	var chestText = PIXI.Texture.fromImage('static/img/chest.png');
 
 	// create sprites from textures
 	var monster = new PIXI.Sprite(monsterText);
 	var book = new PIXI.Sprite(bookText);
 	var room = new PIXI.Sprite(roomText);
 	var dresser = new PIXI.Sprite(dresserText);
+	var chest = new PIXI.Sprite(chestText);
 
 	setupMonster();
 	setupBook();
 	setupRoom();
 	setupDresser();
+	setupChest();
 
 	//create keybindings
 	var left = keyboard(37),
@@ -37,13 +40,15 @@ $( document ).ready(function() {
 	//group hiding places
 	var hidingSpots = [
 		book,
-		dresser	
+		dresser,
+		chest
 	];
 
 	//add sprites to stage
 	stage.addChild(room);
 	stage.addChild(book);
 	stage.addChild(dresser);
+	stage.addChild(chest);
 	stage.addChild(monster);
 
 	// start animating
@@ -224,9 +229,18 @@ $( document ).ready(function() {
 		dresser.anchor.x = 0.5;
 		dresser.anchor.y = 0.5;
 		dresser.position.x = 470;
-		dresser.position.y = 245;
+		dresser.position.y = 248;
 		dresser.scale.x = 4;
 		dresser.scale.y = 4;
+	}
+
+	function setupChest(){
+		chest.anchor.x = 0.5;
+		chest.anchor.y = 0.5;
+		chest.position.x = 320;
+		chest.position.y = 270;
+		chest.scale.x = 4;
+		chest.scale.y = 4;
 	}
 
 	function isCollision(r1, r2) {
