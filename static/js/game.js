@@ -21,7 +21,11 @@ $( document ).ready(function() {
 	var left = keyboard(37),
 		up = keyboard(38),
 		right = keyboard(39),
-		down = keyboard(40);
+		down = keyboard(40),
+		hide = keyboard(32);
+
+	//create checks
+	var isHiding = false;
 
 	//group hiding places
 	var hidingSpots = [
@@ -29,8 +33,8 @@ $( document ).ready(function() {
 	];
 
 	//add sprites to stage
-	stage.addChild(book);
 	stage.addChild(monster);
+	stage.addChild(book);
 
 	// start animating
 	gameLoop();
@@ -66,9 +70,12 @@ $( document ).ready(function() {
 
 	function checkCollisions() {
 		for (spot in hidingSpots){
+			var spot = hidingSpots[spot];
 			if (isFuzzyCollision(monster, spot)){
-				monster.x = spot.x;
-				monster.y = spot.y;
+				if (!isHiding){
+					monster.x = spot.x;
+					monster.y = spot.y;
+				}
 			}
 		}
 	}
@@ -175,7 +182,7 @@ $( document ).ready(function() {
 		book.position.y = 350;
 	}
 
-	isFuzzyCollision = function(r1, r2) {
+	function isFuzzyCollision(r1, r2) {
 		return !(r2.x > (r1.x + r1.width) || 
 			(r2.x + r2.width) < r1.x || 
 			r2.y > (r1.y + r1.height) ||
