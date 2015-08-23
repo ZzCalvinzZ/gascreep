@@ -1,5 +1,4 @@
 $( document ).ready(function() {
-
 	var renderer = PIXI.autoDetectRenderer(800, 400,{backgroundColor : 0x1099bb});
 	document.body.appendChild(renderer.view);
 
@@ -14,9 +13,10 @@ $( document ).ready(function() {
 
 	//setup times mom comes
 	var timer = 0;
-	var momComesInterval = randomInt(500, 1000);
-	var momIsHereInterval = momComesInterval + 500;
+	var momComesInterval = randomInt(300, 600);
+	var momIsHereInterval = momComesInterval + 200;
 	var gameOver = false;
+	var restartCount = 0;
 
 	// create textures
 	var monsterText = PIXI.Texture.fromImage('static/img/monster.png');
@@ -47,18 +47,6 @@ $( document ).ready(function() {
 	var momHereText = new PIXI.Text('Go to sleep little one...', {'fill':'white'});
 	var caughtText = new PIXI.Text('Ahhh, get away from my baby you Monster!');
 
-
-	setupMonster();
-	setupBook();
-	setupRoom();
-	setupDresser();
-	setupChest();
-	setupCrib();
-	setupWalk();
-	setupMomComing();
-	setupMomHere();
-	setupCaught();
-
 	//create keybindings
 	var left = keyboard(37),
 		up = keyboard(38),
@@ -77,6 +65,17 @@ $( document ).ready(function() {
 		chest
 	];
 
+	setupMonster();
+	setupBook();
+	setupRoom();
+	setupDresser();
+	setupChest();
+	setupCrib();
+	setupWalk();
+	setupMomComing();
+	setupMomHere();
+	setupCaught();
+
 	//add to container
 	screenFadeContainer.addChild(fullSceenCover); 
 	screenFadeContainer.addChild(caughtText);
@@ -94,24 +93,10 @@ $( document ).ready(function() {
 
 	stage.addChild(screenFadeContainer);
 
-	//loadingLoop();
+	resetGame();
 
-	// start animating
+	//main loop
 	gameLoop();
-
-	//function loadingLoop() {
-		//while (true) {
-			//var breakOut = true;
-			//for (texture in allTextures){
-				//if (!allTextures[texture].baseTexture.hasLoaded) {
-					//breakOut = false;
-				//}
-			//}
-			//if (breakOut){
-				//break;
-			//}
-		//}
-	//}
 
 	function gameLoop() {
 
@@ -123,11 +108,16 @@ $( document ).ready(function() {
 			momHereText.visible = true;
 			if (!isHiding){
 				gameOver = true;
-
+				restartCount = 0;
 			}
 		}
 		if (gameOver){
+			if (restartCount === 500){
+				resetGame();	
+			}
 			screenFadeContainer.alpha += 0.01;
+			restartCount += 1;
+
 		}
 
 		requestAnimationFrame(gameLoop);
@@ -413,6 +403,52 @@ $( document ).ready(function() {
 
 	function randomInt(min,max){
 		return Math.floor(Math.random()*(max-min+1)+min);
+	}
+
+	function resetGame() {
+		stage = new PIXI.Container();
+
+		// container for fading out 
+		screenFadeContainer = new PIXI.Container();
+		screenFadeContainer.scale.x = screenFadeContainer.scale.y = 1;
+		screenFadeContainer.alpha = 0;
+		fullSceenCover = rectangle(0, 0, 800, 400, 0xFFFFFF, 0xFFFFFF, 0 );
+
+		timer = 0;
+		momComesInterval = randomInt(300, 600);
+		momIsHereInterval = momComesInterval + 200;
+		gameOver = false;
+		restartCount = 0;
+
+		//create checks
+		isHiding = false;
+		hidePressed = false;
+		//add to container
+		screenFadeContainer.addChild(fullSceenCover); 
+		screenFadeContainer.addChild(caughtText);
+		
+		setupMonster();
+		setupBook();
+		setupRoom();
+		setupDresser();
+		setupChest();
+		setupCrib();
+		setupWalk();
+		setupMomComing();
+		setupMomHere();
+		setupCaught();
+
+		//add sprites to stage
+		stage.addChild(room);
+		stage.addChild(book);
+		stage.addChild(dresser);
+		stage.addChild(chest);
+		stage.addChild(cribBaby);
+		stage.addChild(monster);
+		stage.addChild(walk);
+		stage.addChild(momComingText);
+
+		stage.addChild(screenFadeContainer);
 	}
 
 });
