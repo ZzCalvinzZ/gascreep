@@ -12,6 +12,10 @@ $( document ).ready(function() {
 	var roomText = PIXI.Texture.fromImage('static/img/room.png');
 	var dresserText = PIXI.Texture.fromImage('static/img/dresser.png');
 	var chestText = PIXI.Texture.fromImage('static/img/chest.png');
+	var cribBabyText = PIXI.Texture.fromImage('static/img/babynormal.png');
+	var walkText1 = PIXI.Texture.fromImage('static/img/walk/sprite_1.png');
+	var walkText2 = PIXI.Texture.fromImage('static/img/walk/sprite_2.png');
+	var walkText3 = PIXI.Texture.fromImage('static/img/walk/sprite_3.png');
 
 	// create sprites from textures
 	var monster = new PIXI.Sprite(monsterText);
@@ -19,12 +23,18 @@ $( document ).ready(function() {
 	var room = new PIXI.Sprite(roomText);
 	var dresser = new PIXI.Sprite(dresserText);
 	var chest = new PIXI.Sprite(chestText);
+	var cribBaby = new PIXI.Sprite(cribBabyText);
+	
+	//create movies from texture lists
+	var walk = new PIXI.extras.MovieClip([walkText1, walkText2, walkText3])
 
 	setupMonster();
 	setupBook();
 	setupRoom();
 	setupDresser();
 	setupChest();
+	setupCrib();
+	setupWalk();
 
 	//create keybindings
 	var left = keyboard(37),
@@ -49,7 +59,9 @@ $( document ).ready(function() {
 	stage.addChild(book);
 	stage.addChild(dresser);
 	stage.addChild(chest);
+	stage.addChild(cribBaby);
 	stage.addChild(monster);
+	stage.addChild(walk);
 
 	// start animating
 	gameLoop();
@@ -72,14 +84,50 @@ $( document ).ready(function() {
 		if (monster.x < 0){
 			monster.x = 0;
 		}
-		if (monster.x > 800){
+		else if (monster.x > 800){
 			monster.x = 800;
 		}
 		if (monster.y < 280){
 			monster.y = 280;
 		}
-		if (monster.y > 400){
+		else if (monster.y > 400){
 			monster.y = 400;
+		}
+
+		if (monster.vx > 0){
+			walk.x = monster.x
+			walk.scale.x = 4;
+			monster.scale.x = 4;
+			if (!walk.playing) {
+				monster.visible = false;
+				walk.visible = true;
+				walk.play();
+			}
+		}
+		else if (monster.vx < 0){
+			walk.x = monster.x
+			walk.scale.x = -4;
+			monster.scale.x = -4;
+			if (!walk.playing) {
+				monster.visible = false;
+				walk.visible = true;
+				walk.play();
+			}
+		}
+		if (monster.vy < 0 || monster.vy > 0){
+			walk.scale.x = monster.scale.x;
+			walk.y = monster.y;
+			if (!walk.playing) {
+				monster.visible = false;
+				walk.visible = true;
+				walk.play();
+			}
+		}
+		if (monster.vy === 0 && monster.vx === 0){
+			walk.y = monster.y;
+			monster.visible = true;
+			walk.visible = false;
+			walk.stop();
 		}
 	}
 
@@ -88,8 +136,6 @@ $( document ).ready(function() {
 			var spot = hidingSpots[spot];
 			if (isCollision(monster, spot)){
 				if (!isHiding && hidePressed){
-					//monster.x = spot.x;
-					//monster.y = spot.y;
 					stage.swapChildren(monster, spot);
 					isHiding = true;
 				} else if (isHiding && !hidePressed){
@@ -140,7 +186,7 @@ $( document ).ready(function() {
 	
 	left.press = function() {
 		if (!isHiding){
-			monster.vx = -5;
+			monster.vx = -3;
 			monster.vy = 0;
 		}
 	};
@@ -153,7 +199,7 @@ $( document ).ready(function() {
 
 	right.press = function() {
 		if (!isHiding){
-			monster.vx = 5;
+			monster.vx = 3;
 			monster.vy = 0;
 		}
 	};
@@ -167,7 +213,7 @@ $( document ).ready(function() {
 	up.press = function() {
 		if (!isHiding){
 			monster.vx = 0;
-			monster.vy = -3;
+			monster.vy = -2;
 		}
 	};
 
@@ -180,7 +226,7 @@ $( document ).ready(function() {
 	down.press = function() {
 		if (!isHiding){
 			monster.vx = 0;
-			monster.vy = 3;
+			monster.vy = 2;
 		}
 	};
 
@@ -214,6 +260,8 @@ $( document ).ready(function() {
 		book.anchor.y = 0.5;
 		book.position.x = 300;
 		book.position.y = 350;
+		book.scale.x = 4;
+		book.scale.y = 4;
 	}
 
 	function setupRoom(){
@@ -241,6 +289,24 @@ $( document ).ready(function() {
 		chest.position.y = 270;
 		chest.scale.x = 4;
 		chest.scale.y = 4;
+	}
+
+	function setupCrib(){
+		cribBaby.anchor.x = 0.5;
+		cribBaby.anchor.y = 0.5;
+		cribBaby.position.x = 710;
+		cribBaby.position.y = 213;
+		cribBaby.scale.x = 4;
+		cribBaby.scale.y = 4;
+	}
+
+	function setupWalk(){
+		walk.anchor.x = 0.5;
+		walk.anchor.y = 0.5;
+		walk.scale.x = 4;
+		walk.scale.y = 4;
+		walk.visible = false;
+		walk.animationSpeed = 0.1;
 	}
 
 	function isCollision(r1, r2) {
