@@ -27,6 +27,7 @@ $( document ).ready(function() {
 	var dresserText = PIXI.Texture.fromImage('static/img/dresser.png');
 	var chestText = PIXI.Texture.fromImage('static/img/chest.png');
 	var cribBabyText = PIXI.Texture.fromImage('static/img/babynormal.png');
+	var babyText = PIXI.Texture.fromImage('static/img/baby.png');
 	var walkText1 = PIXI.Texture.fromImage('static/img/walk/sprite_1.png');
 	var walkText2 = PIXI.Texture.fromImage('static/img/walk/sprite_2.png');
 	var walkText3 = PIXI.Texture.fromImage('static/img/walk/sprite_3.png');
@@ -47,6 +48,7 @@ $( document ).ready(function() {
 	var dresser = new PIXI.Sprite(dresserText);
 	var chest = new PIXI.Sprite(chestText);
 	var cribBaby = new PIXI.Sprite(cribBabyText);
+	var baby = new PIXI.Sprite(babyText);
 	
 	//create movies from texture lists
 	var walk = new PIXI.extras.MovieClip([walkText1, walkText2, walkText3])
@@ -131,6 +133,8 @@ $( document ).ready(function() {
 		if (monster.x > 630 && monster.y < 285 && monster.y > 150 && monster.x < 800){
 			climb.x = monster.x;
 			climb.y = monster.y;
+			walk.x = monster.x;
+			walk.y = monster.y;
 			if (monster.vy === 0 && monster.vx === 0){
 				climb.stop();
 			}
@@ -143,22 +147,24 @@ $( document ).ready(function() {
 		} else if (climb.visible){
 			if (monster.x < 631){
 				monster.x = 631;
-				climb.x = 631
+				climb.x = 631;
+				walk.x = 631;
 			}
 			else if (monster.x > 799){
 				monster.x = 799;
 				climb.x = 799;
+				walk.x = 799;
 			}
 			if (monster.y < 151){
 				monster.y = 151;
 				climb.y = 151;
 				climb.stop();
+				walk.y = 151;
 			}
 			else if (monster.y > 285){
-				monster.y = 285;
 				climb.stop();
 				climb.visible = false;
-				monster.visible = true;
+				walk.visible = true;
 			}
 		} else {
 
@@ -233,6 +239,10 @@ $( document ).ready(function() {
 				isHiding = false;
 			}
 		}
+	}
+
+	function takeBaby() {
+		
 	}
 
 	function keyboard(keyCode) {
@@ -326,7 +336,11 @@ $( document ).ready(function() {
 	};
 
 	hide.press = function() {
-		hidePressed = true;
+		if (monster.x > 680 && monster.x < 735 && monster.y < 230 && monster.y > 185){
+			takeBaby();
+		} else {
+			hidePressed = true;
+		}
 	};
 
 	hide.release = function() {
@@ -429,6 +443,15 @@ $( document ).ready(function() {
 		caughtText.y = 200;
 	}
 
+	function setupBaby(){
+		baby.anchor.x = 0.5;
+		baby.anchor.y = 0.5;
+		baby.x = 400;
+		baby.y = 200;
+		baby.visible = false;
+		baby.rotate = 90;
+	}
+
 	function isCollision(r1, r2) {
 		if (monster.scale.x < 0) {
 			return !(r2.x > (r1.x - r1.width / 2) || 
@@ -494,6 +517,7 @@ $( document ).ready(function() {
 		setupMomComing();
 		setupMomHere();
 		setupCaught();
+		setupBaby();
 
 		//add sprites to stage
 		stage.addChild(room);
@@ -502,6 +526,7 @@ $( document ).ready(function() {
 		stage.addChild(chest);
 		stage.addChild(cribBaby);
 		stage.addChild(monster);
+		stage.addChild(baby);
 		stage.addChild(walk);
 		stage.addChild(climb);
 		stage.addChild(momComingText);
