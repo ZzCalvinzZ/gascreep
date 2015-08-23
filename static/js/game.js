@@ -19,6 +19,7 @@ $( document ).ready(function() {
 	var restartCount = 0;
 	var momResetInterval = momIsHereInterval + 200;
 	var momReset = false;
+	var babyTaken = false;
 
 	// create textures
 	var monsterText = PIXI.Texture.fromImage('static/img/monster.png');
@@ -27,6 +28,7 @@ $( document ).ready(function() {
 	var dresserText = PIXI.Texture.fromImage('static/img/dresser.png');
 	var chestText = PIXI.Texture.fromImage('static/img/chest.png');
 	var cribBabyText = PIXI.Texture.fromImage('static/img/babynormal.png');
+	var cribText = PIXI.Texture.fromImage('static/img/crib.png');
 	var babyText = PIXI.Texture.fromImage('static/img/baby.png');
 	var walkText1 = PIXI.Texture.fromImage('static/img/walk/sprite_1.png');
 	var walkText2 = PIXI.Texture.fromImage('static/img/walk/sprite_2.png');
@@ -130,6 +132,12 @@ $( document ).ready(function() {
 		//Use the monster.s velocity to make it move
 		monster.x += monster.vx;
 		monster.y += monster.vy;
+
+		if (babyTaken) {
+			baby.x = monster.x;
+			baby.y = monster.y - 25;
+		}
+
 		if (monster.x > 630 && monster.y < 285 && monster.y > 150 && monster.x < 800){
 			climb.x = monster.x;
 			climb.y = monster.y;
@@ -167,7 +175,6 @@ $( document ).ready(function() {
 				walk.visible = true;
 			}
 		} else {
-
 			if (monster.x < 0){
 				monster.x = 0;
 			}
@@ -191,6 +198,7 @@ $( document ).ready(function() {
 					walk.visible = true;
 					walk.play();
 				}
+
 			}
 			else if (monster.vx < 0){
 				walk.x = monster.x
@@ -227,6 +235,9 @@ $( document ).ready(function() {
 				if (!isHiding && hidePressed){
 					if (stage.getChildIndex(monster) > stage.getChildIndex(spot)) {
 						stage.swapChildren(monster, spot);
+						if (babyTaken){
+							baby.visible = false;
+						}
 					}
 					isHiding = true;
 				}
@@ -234,6 +245,9 @@ $( document ).ready(function() {
 			if (!hidePressed){
 				if (stage.getChildIndex(spot) > stage.getChildIndex(monster)) {
 					stage.swapChildren(monster, spot);
+					if (babyTaken){
+						baby.visible = true;
+					}
 				}
 				stage.setChildIndex(spot, 3);
 				isHiding = false;
@@ -242,7 +256,11 @@ $( document ).ready(function() {
 	}
 
 	function takeBaby() {
-		
+		cribBaby.texture = cribText;
+		babyTaken = true;
+		baby.x = monster.x;
+		baby.y = monster.y - 25;
+		baby.visible = true;
 	}
 
 	function keyboard(keyCode) {
@@ -402,6 +420,7 @@ $( document ).ready(function() {
 		cribBaby.position.y = 213;
 		cribBaby.scale.x = 4;
 		cribBaby.scale.y = 4;
+		cribBaby.texture = cribBabyText;
 	}
 
 	function setupWalk(){
@@ -446,10 +465,10 @@ $( document ).ready(function() {
 	function setupBaby(){
 		baby.anchor.x = 0.5;
 		baby.anchor.y = 0.5;
-		baby.x = 400;
-		baby.y = 200;
 		baby.visible = false;
-		baby.rotate = 90;
+		baby.rotation = Math.PI/2;
+		baby.scale.x = 4;
+		baby.scale.y = 4;
 	}
 
 	function isCollision(r1, r2) {
@@ -498,6 +517,7 @@ $( document ).ready(function() {
 		restartCount = 0;
 		momResetInterval = momIsHereInterval + 200;
 		momReset = false;
+		babyTaken = false;
 
 		//create checks
 		isHiding = false;
