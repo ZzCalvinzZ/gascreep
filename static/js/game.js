@@ -20,6 +20,7 @@ $( document ).ready(function() {
 	var momResetInterval = momIsHereInterval + 200;
 	var momReset = false;
 	var babyTaken = false;
+	var babyMissing = false;
 
 	// create textures
 	var monsterText = PIXI.Texture.fromImage('static/img/monster.png');
@@ -60,6 +61,7 @@ $( document ).ready(function() {
 	var momComingText = new PIXI.Text('... (better hide)', {'fill':'white'});
 	var momHereText = new PIXI.Text('Go to sleep little one...', {'fill':'white'});
 	var caughtText = new PIXI.Text('Ahhh, get away from my baby you Monster!');
+	var babyMissingText = new PIXI.Text('Oh No! Where did baby go?! Check everywhere!');
 
 	//create keybindings
 	var left = keyboard(37),
@@ -91,12 +93,17 @@ $( document ).ready(function() {
 			momComingText.visible = true;
 		}
 		if (timer === momIsHereInterval){
-			momComingText.visible = false;
-			momHereText.visible = true;
 			if (!isHiding){
 				gameOver = true;
 				restartCount = 0;
+			} else if (babyTaken){
+				babyMissing = true;
+				gameOver = true;
+				restartCount = 0;
+				momComingText.visible = false;
 			} else {
+				momComingText.visible = false;
+				momHereText.visible = true;
 				momReset = true;
 			}
 		}
@@ -106,6 +113,11 @@ $( document ).ready(function() {
 			}
 			if (Math.round(screenFadeContainer.alpha * 100) / 100 !== 1.00){
 				screenFadeContainer.alpha += 0.01;
+			}
+			if (babyMissing){
+				babyMissingText.visible = true;
+			} else {
+				caughtText.visible = true;
 			}
 			restartCount += 1;
 
@@ -460,6 +472,15 @@ $( document ).ready(function() {
 		caughtText.anchor.y = 0.5;
 		caughtText.x = 400;
 		caughtText.y = 200;
+		caughtText.visible = false;
+	}
+
+	function setupBabyText(){
+		babyMissingText.anchor.x = 0.5;
+		babyMissingText.anchor.y = 0.5;
+		babyMissingText.x = 400;
+		babyMissingText.y = 200;
+		babyMissingText.visible = false;
 	}
 
 	function setupBaby(){
@@ -518,6 +539,7 @@ $( document ).ready(function() {
 		momResetInterval = momIsHereInterval + 200;
 		momReset = false;
 		babyTaken = false;
+		babyMissing = false;
 
 		//create checks
 		isHiding = false;
@@ -525,6 +547,7 @@ $( document ).ready(function() {
 		//add to container
 		screenFadeContainer.addChild(fullSceenCover); 
 		screenFadeContainer.addChild(caughtText);
+		screenFadeContainer.addChild(babyMissingText);
 		
 		setupMonster();
 		setupBook();
@@ -537,6 +560,7 @@ $( document ).ready(function() {
 		setupMomComing();
 		setupMomHere();
 		setupCaught();
+		setupBabyText();
 		setupBaby();
 
 		//add sprites to stage
