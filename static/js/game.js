@@ -6,6 +6,18 @@ $( document ).ready(function() {
 	// create the root of the scene graph
 	var stage = new PIXI.Container();
 
+	// container for fading out 
+	var screenFadeContainer = new PIXI.Container();
+	screenFadeContainer.scale.x = screenFadeContainer.scale.y = 1;
+	screenFadeContainer.alpha = 0;
+	var fullSceenCover = rectangle(0, 0, 800, 400, 0xFFFFFF, 0xFFFFFF, 0 );
+
+	//setup times mom comes
+	var timer = 0;
+	var momComesInterval = randomInt(500, 1000);
+	var momIsHereInterval = momComesInterval + 500;
+	var gameOver = false;
+
 	// create textures
 	var monsterText = PIXI.Texture.fromImage('static/img/monster.png');
 	var bookText = PIXI.Texture.fromImage('static/img/book.png');
@@ -16,6 +28,8 @@ $( document ).ready(function() {
 	var walkText1 = PIXI.Texture.fromImage('static/img/walk/sprite_1.png');
 	var walkText2 = PIXI.Texture.fromImage('static/img/walk/sprite_2.png');
 	var walkText3 = PIXI.Texture.fromImage('static/img/walk/sprite_3.png');
+
+	var allTextures = [monsterText, bookText, roomText, dresserText, chestText, cribBabyText, walkText1, walkText2, walkText3];
 
 	// create sprites from textures
 	var monster = new PIXI.Sprite(monsterText);
@@ -28,6 +42,12 @@ $( document ).ready(function() {
 	//create movies from texture lists
 	var walk = new PIXI.extras.MovieClip([walkText1, walkText2, walkText3])
 
+	//create text
+	var momComingText = new PIXI.Text('... (better hide)', {'fill':'white'});
+	var momHereText = new PIXI.Text('Go to sleep little one...', {'fill':'white'});
+	var caughtText = new PIXI.Text('Ahhh, get away from my baby you Monster!');
+
+
 	setupMonster();
 	setupBook();
 	setupRoom();
@@ -35,6 +55,9 @@ $( document ).ready(function() {
 	setupChest();
 	setupCrib();
 	setupWalk();
+	setupMomComing();
+	setupMomHere();
+	setupCaught();
 
 	//create keybindings
 	var left = keyboard(37),
@@ -54,6 +77,11 @@ $( document ).ready(function() {
 		chest
 	];
 
+	//add to container
+	screenFadeContainer.addChild(fullSceenCover); 
+	screenFadeContainer.addChild(caughtText);
+	
+
 	//add sprites to stage
 	stage.addChild(room);
 	stage.addChild(book);
@@ -62,11 +90,46 @@ $( document ).ready(function() {
 	stage.addChild(cribBaby);
 	stage.addChild(monster);
 	stage.addChild(walk);
+	stage.addChild(momComingText);
+
+	stage.addChild(screenFadeContainer);
+
+	//loadingLoop();
 
 	// start animating
 	gameLoop();
 
+	//function loadingLoop() {
+		//while (true) {
+			//var breakOut = true;
+			//for (texture in allTextures){
+				//if (!allTextures[texture].baseTexture.hasLoaded) {
+					//breakOut = false;
+				//}
+			//}
+			//if (breakOut){
+				//break;
+			//}
+		//}
+	//}
+
 	function gameLoop() {
+
+		if (timer === momComesInterval){
+			momComingText.visible = true;
+		}
+		if (timer === momIsHereInterval){
+			momComingText.visible = false;
+			momHereText.visible = true;
+			if (!isHiding){
+				gameOver = true;
+
+			}
+		}
+		if (gameOver){
+			screenFadeContainer.alpha += 0.01;
+		}
+
 		requestAnimationFrame(gameLoop);
 
 		moveMonster();
@@ -74,6 +137,8 @@ $( document ).ready(function() {
 
 		// render the container
 		renderer.render(stage);
+
+		timer += 1
 
 	}
 
@@ -309,11 +374,45 @@ $( document ).ready(function() {
 		walk.animationSpeed = 0.1;
 	}
 
+	function setupMomComing(){
+		momComingText.x = 20;
+		momComingText.y = 100;
+		momComingText.visible = false;
+	}
+
+	function setupMomHere(){
+		momHereText.x = 20;
+		momHereText.y = 100;
+		momHereText.visible = false;
+	}
+
+	function setupCaught(){
+		caughtText.anchor.x = 0.5;
+		caughtText.anchor.y = 0.5;
+		caughtText.x = 400;
+		caughtText.y = 200;
+	}
+
 	function isCollision(r1, r2) {
 		return !(r2.x > (r1.x + r1.width) || 
 			(r2.x + r2.width) < r1.x || 
 			r2.y > (r1.y + r1.height) ||
 			(r2.y + r2.height) < r1.y);
+	}
+
+	function rectangle( x, y, width, height, backgroundColor, borderColor, borderWidth ) { 
+		var box = new PIXI.Graphics();
+		box.beginFill(backgroundColor);
+		box.lineStyle(borderWidth , borderColor);
+		box.drawRect(0, 0, width - borderWidth, height - borderWidth);
+		box.endFill();
+		box.position.x = x + borderWidth/2;
+		box.position.y = y + borderWidth/2;
+		return box;
+	};
+
+	function randomInt(min,max){
+		return Math.floor(Math.random()*(max-min+1)+min);
 	}
 
 });
