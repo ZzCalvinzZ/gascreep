@@ -155,7 +155,8 @@ $( document ).ready(function() {
 			baby.y = monster.y - 25;
 		}
 
-		if (monster.x > 630 && monster.y < 285 && monster.y > 150 && monster.x < 800){
+		// for climbing on the crib
+		if (monster.x > 630 && monster.y < 285 && monster.y > 150 && monster.x < 801){
 			climb.x = monster.x;
 			climb.y = monster.y;
 			walk.x = monster.x;
@@ -169,16 +170,17 @@ $( document ).ready(function() {
 				monster.visible = false;
 				climb.play();
 			}
+		// for boundaries on the crib	
 		} else if (climb.visible){
 			if (monster.x < 631){
 				monster.x = 631;
 				climb.x = 631;
 				walk.x = 631;
 			}
-			else if (monster.x > 799){
-				monster.x = 799;
-				climb.x = 799;
-				walk.x = 799;
+			else if (monster.x > 800){
+				monster.x = 800;
+				climb.x = 800;
+				walk.x = 800;
 			}
 			if (monster.y < 151){
 				monster.y = 151;
@@ -191,6 +193,7 @@ $( document ).ready(function() {
 				climb.visible = false;
 				walk.visible = true;
 			}
+		//for walking
 		} else {
 			if (monster.x < 0){
 				monster.x = 0;
@@ -230,6 +233,7 @@ $( document ).ready(function() {
 			if (monster.vy < 0 || monster.vy > 0){
 				walk.scale.x = monster.scale.x;
 				walk.y = monster.y;
+				walk.x = monster.x;
 				if (!walk.playing) {
 					monster.visible = false;
 					walk.visible = true;
@@ -387,7 +391,7 @@ $( document ).ready(function() {
 	function setupMonster(){
 		monster.anchor.x = 0.5;
 		monster.anchor.y = 0.5;
-		monster.position.x = 100;
+		monster.position.x = 250;
 		monster.position.y = 300;
 		monster.vx = 0;
 		monster.vy = 0;
