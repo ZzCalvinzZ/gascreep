@@ -17,6 +17,8 @@ $( document ).ready(function() {
 	var momIsHereInterval = momComesInterval + 200;
 	var gameOver = false;
 	var restartCount = 0;
+	var momResetInterval = momIsHereInterval + 200;
+	var momReset = false;
 
 	// create textures
 	var monsterText = PIXI.Texture.fromImage('static/img/monster.png');
@@ -65,34 +67,6 @@ $( document ).ready(function() {
 		chest
 	];
 
-	setupMonster();
-	setupBook();
-	setupRoom();
-	setupDresser();
-	setupChest();
-	setupCrib();
-	setupWalk();
-	setupMomComing();
-	setupMomHere();
-	setupCaught();
-
-	//add to container
-	screenFadeContainer.addChild(fullSceenCover); 
-	screenFadeContainer.addChild(caughtText);
-	
-
-	//add sprites to stage
-	stage.addChild(room);
-	stage.addChild(book);
-	stage.addChild(dresser);
-	stage.addChild(chest);
-	stage.addChild(cribBaby);
-	stage.addChild(monster);
-	stage.addChild(walk);
-	stage.addChild(momComingText);
-
-	stage.addChild(screenFadeContainer);
-
 	resetGame();
 
 	//main loop
@@ -111,7 +85,7 @@ $( document ).ready(function() {
 				gameOver = true;
 				restartCount = 0;
 			} else {
-				timer = 0;
+				momReset = true;
 			}
 		}
 		if (gameOver){
@@ -123,6 +97,13 @@ $( document ).ready(function() {
 			}
 			restartCount += 1;
 
+		}
+
+		if (momReset){
+			if (timer === momResetInterval){
+				momHereText.visible = false;
+				timer = 0;
+			}
 		}
 
 		moveMonster();
@@ -194,13 +175,16 @@ $( document ).ready(function() {
 			var spot = hidingSpots[spot];
 			if (isCollision(monster, spot)){
 				if (!isHiding && hidePressed){
-					stage.setChildIndex(spot, stage.children.length - 2);
-					stage.setChildIndex(monster, 3);
+					if (stage.getChildIndex(monster) > stage.getChildIndex(spot)) {
+						stage.swapChildren(monster, spot);
+					}
 					isHiding = true;
 				}
 			}
 			if (!hidePressed){
-				stage.setChildIndex(monster, stage.children.length - 2);
+				if (stage.getChildIndex(spot) > stage.getChildIndex(monster)) {
+					stage.swapChildren(monster, spot);
+				}
 				stage.setChildIndex(spot, 3);
 				isHiding = false;
 			}
@@ -433,6 +417,8 @@ $( document ).ready(function() {
 		momIsHereInterval = momComesInterval + 200;
 		gameOver = false;
 		restartCount = 0;
+		momResetInterval = momIsHereInterval + 200;
+		momReset = false;
 
 		//create checks
 		isHiding = false;
@@ -461,6 +447,7 @@ $( document ).ready(function() {
 		stage.addChild(monster);
 		stage.addChild(walk);
 		stage.addChild(momComingText);
+		stage.addChild(momHereText);
 
 		stage.addChild(screenFadeContainer);
 	}
