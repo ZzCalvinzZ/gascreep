@@ -21,6 +21,7 @@ $( document ).ready(function() {
 	var momReset = false;
 	var babyTaken = false;
 	var babyMissing = false;
+	var gameWin = false;
 
 	// create textures
 	var monsterText = PIXI.Texture.fromImage('static/img/monster.png');
@@ -121,6 +122,10 @@ $( document ).ready(function() {
 			}
 			restartCount += 1;
 
+		}
+
+		if (gameWin){
+			console.log("I win");
 		}
 
 		if (momReset){
@@ -368,6 +373,8 @@ $( document ).ready(function() {
 	hide.press = function() {
 		if (monster.x > 680 && monster.x < 735 && monster.y < 230 && monster.y > 185){
 			takeBaby();
+		} else if (monster.x > 150 && monster.x < 250 && monster.y < 300 && babyTaken){
+			gameWin = true;
 		} else {
 			hidePressed = true;
 		}
@@ -540,6 +547,7 @@ $( document ).ready(function() {
 		momReset = false;
 		babyTaken = false;
 		babyMissing = false;
+		gameWin = false;
 
 		//create checks
 		isHiding = false;
