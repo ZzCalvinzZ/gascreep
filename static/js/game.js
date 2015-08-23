@@ -30,8 +30,15 @@ $( document ).ready(function() {
 	var walkText1 = PIXI.Texture.fromImage('static/img/walk/sprite_1.png');
 	var walkText2 = PIXI.Texture.fromImage('static/img/walk/sprite_2.png');
 	var walkText3 = PIXI.Texture.fromImage('static/img/walk/sprite_3.png');
+	var climbText1 = PIXI.Texture.fromImage('static/img/climbing/dude1.png');
+	var climbText2 = PIXI.Texture.fromImage('static/img/climbing/dude2.png');
+	var climbText3 = PIXI.Texture.fromImage('static/img/climbing/dude3.png');
+	var climbText4 = PIXI.Texture.fromImage('static/img/climbing/dude4.png');
+	var climbText5 = PIXI.Texture.fromImage('static/img/climbing/dude5.png');
 
-	var allTextures = [monsterText, bookText, roomText, dresserText, chestText, cribBabyText, walkText1, walkText2, walkText3];
+	var allTextures = [monsterText, bookText, roomText, dresserText, chestText, 
+						cribBabyText, walkText1, walkText2, walkText3, climbText1, 
+						climbText2, climbText3, climbText4, climbText5];
 
 	// create sprites from textures
 	var monster = new PIXI.Sprite(monsterText);
@@ -43,6 +50,7 @@ $( document ).ready(function() {
 	
 	//create movies from texture lists
 	var walk = new PIXI.extras.MovieClip([walkText1, walkText2, walkText3])
+	var climb = new PIXI.extras.MovieClip([climbText1, climbText2, climbText3, climbText4, climbText5])
 
 	//create text
 	var momComingText = new PIXI.Text('... (better hide)', {'fill':'white'});
@@ -120,53 +128,89 @@ $( document ).ready(function() {
 		//Use the monster.s velocity to make it move
 		monster.x += monster.vx;
 		monster.y += monster.vy;
-		if (monster.x < 0){
-			monster.x = 0;
-		}
-		else if (monster.x > 800){
-			monster.x = 800;
-		}
-		if (monster.y < 280){
-			monster.y = 280;
-		}
-		else if (monster.y > 400){
-			monster.y = 400;
-		}
+		if (monster.x > 630 && monster.y < 285 && monster.y > 150 && monster.x < 800){
+			climb.x = monster.x;
+			climb.y = monster.y;
+			if (monster.vy === 0 && monster.vx === 0){
+				climb.stop();
+			}
+			else if (!climb.playing){
+				climb.visible = true;
+				walk.visible = false;
+				monster.visible = false;
+				climb.play();
+			}
+		} else if (climb.visible){
+			if (monster.x < 631){
+				monster.x = 631;
+				climb.x = 631
+			}
+			else if (monster.x > 799){
+				monster.x = 799;
+				climb.x = 799;
+			}
+			if (monster.y < 151){
+				monster.y = 151;
+				climb.y = 151;
+				climb.stop();
+			}
+			else if (monster.y > 285){
+				monster.y = 285;
+				climb.stop();
+				climb.visible = false;
+				monster.visible = true;
+			}
+		} else {
 
-		if (monster.vx > 0){
-			walk.x = monster.x
-			walk.scale.x = 4;
-			monster.scale.x = 4;
-			if (!walk.playing) {
-				monster.visible = false;
-				walk.visible = true;
-				walk.play();
+			if (monster.x < 0){
+				monster.x = 0;
 			}
-		}
-		else if (monster.vx < 0){
-			walk.x = monster.x
-			walk.scale.x = -4;
-			monster.scale.x = -4;
-			if (!walk.playing) {
-				monster.visible = false;
-				walk.visible = true;
-				walk.play();
+			else if (monster.x > 800){
+				monster.x = 800;
 			}
-		}
-		if (monster.vy < 0 || monster.vy > 0){
-			walk.scale.x = monster.scale.x;
-			walk.y = monster.y;
-			if (!walk.playing) {
-				monster.visible = false;
-				walk.visible = true;
-				walk.play();
+			if (monster.y < 280){
+				monster.y = 280;
 			}
-		}
-		if (monster.vy === 0 && monster.vx === 0){
-			walk.y = monster.y;
-			monster.visible = true;
-			walk.visible = false;
-			walk.stop();
+			else if (monster.y > 400){
+				monster.y = 400;
+			}
+
+			if (monster.vx > 0){
+				walk.x = monster.x
+				walk.scale.x = 4;
+				monster.scale.x = 4;
+				if (!walk.playing) {
+					climb.visible = false;
+					monster.visible = false;
+					walk.visible = true;
+					walk.play();
+				}
+			}
+			else if (monster.vx < 0){
+				walk.x = monster.x
+				walk.scale.x = -4;
+				monster.scale.x = -4;
+				if (!walk.playing) {
+					monster.visible = false;
+					walk.visible = true;
+					walk.play();
+				}
+			}
+			if (monster.vy < 0 || monster.vy > 0){
+				walk.scale.x = monster.scale.x;
+				walk.y = monster.y;
+				if (!walk.playing) {
+					monster.visible = false;
+					walk.visible = true;
+					walk.play();
+				}
+			}
+			if (monster.vy === 0 && monster.vx === 0){
+				walk.y = monster.y;
+				monster.visible = true;
+				walk.visible = false;
+				walk.stop();
+			}
 		}
 	}
 
@@ -298,6 +342,7 @@ $( document ).ready(function() {
 		monster.vy = 0;
 		monster.scale.x = 4;
 		monster.scale.y = 4;
+		monster.visible = true;
 	}
 
 	function setupBook(){
@@ -352,6 +397,17 @@ $( document ).ready(function() {
 		walk.scale.y = 4;
 		walk.visible = false;
 		walk.animationSpeed = 0.1;
+		walk.visible = false;
+	}
+
+	function setupClimb(){
+		climb.anchor.x = 0.5;
+		climb.anchor.y = 0.5;
+		climb.scale.x = 4;
+		climb.scale.y = 4;
+		climb.visible = false;
+		climb.animationSpeed = 0.4;
+		climb.visible = false;
 	}
 
 	function setupMomComing(){
@@ -434,6 +490,7 @@ $( document ).ready(function() {
 		setupChest();
 		setupCrib();
 		setupWalk();
+		setupClimb();
 		setupMomComing();
 		setupMomHere();
 		setupCaught();
@@ -446,6 +503,7 @@ $( document ).ready(function() {
 		stage.addChild(cribBaby);
 		stage.addChild(monster);
 		stage.addChild(walk);
+		stage.addChild(climb);
 		stage.addChild(momComingText);
 		stage.addChild(momHereText);
 
