@@ -99,6 +99,7 @@ $( document ).ready(function() {
 	gameLoop();
 
 	function gameLoop() {
+		requestAnimationFrame(gameLoop);
 
 		if (timer === momComesInterval){
 			momComingText.visible = true;
@@ -109,6 +110,8 @@ $( document ).ready(function() {
 			if (!isHiding){
 				gameOver = true;
 				restartCount = 0;
+			} else {
+				timer = 0;
 			}
 		}
 		if (gameOver){
@@ -121,8 +124,6 @@ $( document ).ready(function() {
 			restartCount += 1;
 
 		}
-
-		requestAnimationFrame(gameLoop);
 
 		moveMonster();
 		hideMonster();
@@ -193,12 +194,15 @@ $( document ).ready(function() {
 			var spot = hidingSpots[spot];
 			if (isCollision(monster, spot)){
 				if (!isHiding && hidePressed){
-					stage.swapChildren(monster, spot);
+					stage.setChildIndex(spot, stage.children.length - 2);
+					stage.setChildIndex(monster, 3);
 					isHiding = true;
-				} else if (isHiding && !hidePressed){
-					stage.swapChildren(monster, spot);
-					isHiding = false;
 				}
+			}
+			if (!hidePressed){
+				stage.setChildIndex(monster, stage.children.length - 2);
+				stage.setChildIndex(spot, 3);
+				isHiding = false;
 			}
 		}
 	}
@@ -386,10 +390,18 @@ $( document ).ready(function() {
 	}
 
 	function isCollision(r1, r2) {
-		return !(r2.x > (r1.x + r1.width) || 
-			(r2.x + r2.width) < r1.x || 
-			r2.y > (r1.y + r1.height) ||
-			(r2.y + r2.height) < r1.y);
+		if (monster.scale.x < 0) {
+			return !(r2.x > (r1.x - r1.width / 2) || 
+				(r2.x + r2.width / 2) < r1.x || 
+				r2.y > (r1.y + r1.height / 2) ||
+				(r2.y + r2.height / 2) < r1.y);
+		
+		} else {
+			return !(r2.x > (r1.x + r1.width / 2) || 
+				(r2.x + r2.width / 2) < r1.x || 
+				r2.y > (r1.y + r1.height / 2) ||
+				(r2.y + r2.height / 2) < r1.y);
+		}
 	}
 
 	function rectangle( x, y, width, height, backgroundColor, borderColor, borderWidth ) { 
