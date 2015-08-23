@@ -84,6 +84,13 @@ $( document ).ready(function() {
 
 	resetGame();
 
+	var sound = new Howl({
+		urls: ['static/ludumdaretrack.mp3'],
+		autoplay: true,
+		loop: true,
+		volume: 0.5,
+	}).play();
+
 	//main loop
 	gameLoop();
 
@@ -116,9 +123,11 @@ $( document ).ready(function() {
 				screenFadeContainer.alpha += 0.01;
 			}
 			if (babyMissing){
+				caughtText.visible = false;
 				babyMissingText.visible = true;
 			} else {
 				caughtText.visible = true;
+				babyMissingText.visible = false;
 			}
 			restartCount += 1;
 
