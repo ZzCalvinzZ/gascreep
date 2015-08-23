@@ -115,7 +115,9 @@ $( document ).ready(function() {
 			if (restartCount === 500){
 				resetGame();	
 			}
-			screenFadeContainer.alpha += 0.01;
+			if (Math.round(screenFadeContainer.alpha * 100) / 100 !== 1.00){
+				screenFadeContainer.alpha += 0.01;
+			}
 			restartCount += 1;
 
 		}
