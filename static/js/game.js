@@ -40,10 +40,15 @@ $( document ).ready(function() {
 	var climbText3 = PIXI.Texture.fromImage('static/img/climbing/dude3.png');
 	var climbText4 = PIXI.Texture.fromImage('static/img/climbing/dude4.png');
 	var climbText5 = PIXI.Texture.fromImage('static/img/climbing/dude5.png');
+	var windowText1 = PIXI.Texture.fromImage('static/img/window/sprite_1.png');
+	var windowText2 = PIXI.Texture.fromImage('static/img/window/sprite_2.png');
+	var windowText3 = PIXI.Texture.fromImage('static/img/window/sprite_3.png');
+	var windowText4 = PIXI.Texture.fromImage('static/img/window/sprite_4.png');
+	var windowText5 = PIXI.Texture.fromImage('static/img/window/sprite_5.png');
 
-	var allTextures = [monsterText, bookText, roomText, dresserText, chestText, 
-						cribBabyText, walkText1, walkText2, walkText3, climbText1, 
-						climbText2, climbText3, climbText4, climbText5];
+	//var allTextures = [monsterText, bookText, roomText, dresserText, chestText, 
+						//cribBabyText, walkText1, walkText2, walkText3, climbText1, 
+						//climbText2, climbText3, climbText4, climbText5];
 
 	// create sprites from textures
 	var monster = new PIXI.Sprite(monsterText);
@@ -57,6 +62,7 @@ $( document ).ready(function() {
 	//create movies from texture lists
 	var walk = new PIXI.extras.MovieClip([walkText1, walkText2, walkText3])
 	var climb = new PIXI.extras.MovieClip([climbText1, climbText2, climbText3, climbText4, climbText5])
+	var windowSky = new PIXI.extras.MovieClip([windowText1, windowText2, windowText3, windowText4, windowText5])
 
 	//create text
 	var momComingText = new PIXI.Text('... (better hide)', {'fill':'white'});
@@ -105,6 +111,10 @@ $( document ).ready(function() {
 	});
 	var screamSound = new Howl({
 		urls: ['static/sound/scream.mp3'],
+		volume: 0.5,
+	});
+	var giggleSound = new Howl({
+		urls: ['static/sound/giggle.mp3'],
 		volume: 0.5,
 	});
 
@@ -413,6 +423,7 @@ $( document ).ready(function() {
 
 	hide.press = function() {
 		if (monster.x > 680 && monster.x < 735 && monster.y < 230 && monster.y > 185){
+			giggleSound.play()
 			takeBaby();
 		} else if (monster.x > 150 && monster.x < 250 && monster.y < 300 && babyTaken){
 			gameWin = true;
@@ -440,7 +451,7 @@ $( document ).ready(function() {
 	function setupBook(){
 		book.anchor.x = 0.5;
 		book.anchor.y = 0.5;
-		book.position.x = 300;
+		book.position.x = 700;
 		book.position.y = 350;
 		book.scale.x = 4;
 		book.scale.y = 4;
@@ -540,6 +551,17 @@ $( document ).ready(function() {
 		baby.scale.y = 4;
 	}
 
+	function setupWindow(){
+		windowSky.anchor.x = 0.5;
+		windowSky.anchor.y = 0.5;
+		windowSky.x = 443;
+		windowSky.y = 95;
+		windowSky.scale.x = 4;
+		windowSky.scale.y = 4;
+		windowSky.animationSpeed = 0.05;
+		windowSky.play();
+	}
+
 	function isCollision(r1, r2) {
 		if (monster.scale.x < 0) {
 			return !(r2.x > (r1.x - r1.width / 2) || 
@@ -606,6 +628,7 @@ $( document ).ready(function() {
 		setupCrib();
 		setupWalk();
 		setupClimb();
+		setupWindow();
 		setupMomComing();
 		setupMomHere();
 		setupCaught();
@@ -622,6 +645,7 @@ $( document ).ready(function() {
 		stage.addChild(baby);
 		stage.addChild(walk);
 		stage.addChild(climb);
+		stage.addChild(windowSky);
 		stage.addChild(momComingText);
 		stage.addChild(momHereText);
 
