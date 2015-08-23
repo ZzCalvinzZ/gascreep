@@ -9,7 +9,7 @@ $( document ).ready(function() {
 	var screenFadeContainer = new PIXI.Container();
 	screenFadeContainer.scale.x = screenFadeContainer.scale.y = 1;
 	screenFadeContainer.alpha = 0;
-	var fullSceenCover = rectangle(0, 0, 800, 400, 0xFFFFFF, 0xFFFFFF, 0 );
+	var fullSceenCover = rectangle(0, 0, 800, 400, 0x000000, 0x000000, 0 );
 
 	//setup times mom comes
 	var timer = 0;
@@ -67,8 +67,8 @@ $( document ).ready(function() {
 	//create text
 	var momComingText = new PIXI.Text('... (better hide)', {'fill':'white'});
 	var momHereText = new PIXI.Text('Go to sleep little one...', {'fill':'white'});
-	var caughtText = new PIXI.Text('Ahhh, get away from my baby you Monster!');
-	var babyMissingText = new PIXI.Text('Oh No! Where did baby go?! Check everywhere!');
+	var caughtText = new PIXI.Text('You have been caught!', {'fill':'white'});
+	var babyMissingText = new PIXI.Text('The baby is gone and the parents find you in the room!', {'fill':'white'});
 
 	//create keybindings
 	var left = keyboard(37),
@@ -117,6 +117,14 @@ $( document ).ready(function() {
 		urls: ['static/sound/giggle.mp3'],
 		volume: 0.5,
 	});
+	var footstepsSound = new Howl({
+		urls: ['static/sound/footsteps.mp3'],
+		volume: 0.5,
+	});
+	var fireSound = new Howl({
+		urls: ['static/sound/fire.mp3'],
+		volume: 0.5,
+	});
 
 	//main loop
 	gameLoop();
@@ -125,9 +133,11 @@ $( document ).ready(function() {
 		requestAnimationFrame(gameLoop);
 
 		if (timer === momComesInterval){
-			momComingText.visible = true;
+			footstepsSound.play();
+			//momComingText.visible = true;
 		}
 		if (timer === momIsHereInterval){
+			footstepsSound.stop();
 			if (!isHiding){
 				gameOver = true;
 				restartCount = 0;
@@ -139,8 +149,8 @@ $( document ).ready(function() {
 				momComingText.visible = false;
 				screamSound.play();
 			} else {
-				momComingText.visible = false;
-				momHereText.visible = true;
+				//momComingText.visible = false;
+				//momHereText.visible = true;
 				momReset = true;
 			}
 		}
@@ -599,7 +609,7 @@ $( document ).ready(function() {
 		screenFadeContainer = new PIXI.Container();
 		screenFadeContainer.scale.x = screenFadeContainer.scale.y = 1;
 		screenFadeContainer.alpha = 0;
-		fullSceenCover = rectangle(0, 0, 800, 400, 0xFFFFFF, 0xFFFFFF, 0 );
+		fullSceenCover = rectangle(0, 0, 800, 400, 0x000000, 0x000000, 0 );
 
 		timer = 0;
 		momComesInterval = randomInt(300, 600);
