@@ -83,13 +83,30 @@ $( document ).ready(function() {
 	];
 
 	resetGame();
-
-	var sound = new Howl({
-		urls: ['static/ludumdaretrack.mp3'],
+	// setup sounds
+	var mainTrack = new Howl({
+		urls: ['static/sound/ludumdaretrack.mp3'],
 		autoplay: true,
 		loop: true,
+		volume: 0.3,
+	});
+
+	var bookSound = new Howl({
+		urls: ['static/sound/book.mp3'],
+		volume: 2,
+	});
+	var dresserSound = new Howl({
+		urls: ['static/sound/dresser.mp3'],
 		volume: 0.5,
-	}).play();
+	});
+	var chestSound = new Howl({
+		urls: ['static/sound/chest.mp3'],
+		volume: 0.5,
+	});
+	var screamSound = new Howl({
+		urls: ['static/sound/scream.mp3'],
+		volume: 0.5,
+	});
 
 	//main loop
 	gameLoop();
@@ -104,11 +121,13 @@ $( document ).ready(function() {
 			if (!isHiding){
 				gameOver = true;
 				restartCount = 0;
+				screamSound.play();
 			} else if (babyTaken){
 				babyMissing = true;
 				gameOver = true;
 				restartCount = 0;
 				momComingText.visible = false;
+				screamSound.play();
 			} else {
 				momComingText.visible = false;
 				momHereText.visible = true;
@@ -270,6 +289,15 @@ $( document ).ready(function() {
 						}
 					}
 					isHiding = true;
+					if (spot === book){
+						bookSound.play();
+					}
+					if (spot === chest){
+						chestSound.play();
+					}
+					if (spot === dresser){
+						dresserSound.play();
+					}
 				}
 			}
 			if (!hidePressed){
