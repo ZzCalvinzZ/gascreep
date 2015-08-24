@@ -1,5 +1,5 @@
 $( document ).ready(function() {
-	var renderer = PIXI.autoDetectRenderer(800, 400,{backgroundColor : 0x1099bb});
+	var renderer = PIXI.autoDetectRenderer(800, 400,{backgroundColor : 0x000000});
 	document.body.appendChild(renderer.view);
 
 	// create the root of the scene graph
@@ -146,6 +146,10 @@ $( document ).ready(function() {
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
 
+		if (Math.round(stage.alpha * 100) / 100 !== 1.00){
+			stage.alpha += 0.01;
+			timer = 0;
+		}
 		if (gameWin){
 			footstepsSound.stop();
 			giggleSound.stop();
@@ -230,7 +234,6 @@ $( document ).ready(function() {
 		renderer.render(stage);
 
 		timer += 1
-
 	}
 
 	function moveMonster() {
@@ -689,7 +692,7 @@ $( document ).ready(function() {
 		winningContainer.alpha = 0;
 
 		timer = 0;
-		momComesInterval = randomInt(50, 100);
+		momComesInterval = randomInt(100, 250);
 		momIsHereInterval = momComesInterval + randomInt(100,300);
 		gameOver = false;
 		restartCount = 0;
@@ -748,6 +751,8 @@ $( document ).ready(function() {
 
 		stage.addChild(screenFadeContainer);
 		stage.addChild(winningContainer);
+
+		stage.alpha = 0;
 
 
 	}
