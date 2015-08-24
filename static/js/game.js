@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+	$('h2').css('color', 'white').css('text-align', 'center');
 	var renderer = PIXI.autoDetectRenderer(800, 400,{backgroundColor : 0x000000});
 	document.body.appendChild(renderer.view);
 
