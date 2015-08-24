@@ -17,11 +17,11 @@ $( document ).ready(function() {
 
 	//setup times mom comes
 	var timer = 0;
-	var momComesInterval = randomInt(100, 300);
-	var momIsHereInterval = momComesInterval + randomInt(100, 300);
+	var momComesInterval;
+	var momIsHereInterval;
 	var gameOver = false;
 	var restartCount = 0;
-	var momResetInterval = momIsHereInterval + 200;
+	var momResetInterval;
 	var momReset = false;
 	var babyTaken = false;
 	var babyMissing = false;
@@ -152,6 +152,21 @@ $( document ).ready(function() {
 			if (restartCount === 1000){
 				fireSound.fade(0.5, 0.1, 100);
 				resetGame();	
+			}
+			if (restartCount > 100){
+				if (Math.round(calvinText.alpha * 100) / 100 !== 1.00){
+					calvinText.alpha += 0.01;
+				}
+			}
+			if (restartCount > 300){
+				if (Math.round(heatherText.alpha * 100) / 100 !== 1.00){
+					heatherText.alpha += 0.01;
+				}
+			}
+			if (restartCount > 500){
+				if (Math.round(willyText.alpha * 100) / 100 !== 1.00){
+					willyText.alpha += 0.01;
+				}
 			}
 			if (Math.round(winningContainer.alpha * 100) / 100 !== 1.00){
 				winningContainer.alpha += 0.01;
@@ -614,6 +629,7 @@ $( document ).ready(function() {
 		calvinText.anchor.y = 0.5;
 		calvinText.x = 120;
 		calvinText.y = 100;
+		calvinText.alpha = 0;
 	}
 
 	function setupHeather(){
@@ -621,6 +637,7 @@ $( document ).ready(function() {
 		heatherText.anchor.y = 0.5;
 		heatherText.x = 120;
 		heatherText.y = 300;
+		heatherText.alpha = 0;
 	}
 
 	function setupWilly(){
@@ -628,6 +645,7 @@ $( document ).ready(function() {
 		willyText.anchor.y = 0.5;
 		willyText.x = 680;
 		willyText.y = 200;
+		willyText.alpha = 0;
 	}
 
 	function isCollision(r1, r2) {
@@ -671,11 +689,11 @@ $( document ).ready(function() {
 		winningContainer.alpha = 0;
 
 		timer = 0;
-		momComesInterval = randomInt(300, 600);
-		momIsHereInterval = momComesInterval + 200;
+		momComesInterval = randomInt(50, 100);
+		momIsHereInterval = momComesInterval + randomInt(100,300);
 		gameOver = false;
 		restartCount = 0;
-		momResetInterval = momIsHereInterval + 200;
+		momResetInterval = momIsHereInterval + 100;
 		momReset = false;
 		babyTaken = false;
 		babyMissing = false;
