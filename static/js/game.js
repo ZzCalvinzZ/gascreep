@@ -10,11 +10,15 @@ $( document ).ready(function() {
 	screenFadeContainer.scale.x = screenFadeContainer.scale.y = 1;
 	screenFadeContainer.alpha = 0;
 	var fullSceenCover = rectangle(0, 0, 800, 400, 0x000000, 0x000000, 0 );
+	var winSceenCover = rectangle(0, 0, 800, 400, 0x000000, 0x000000, 0 );
+
+	var winningContainer = new PIXI.Container();
+	winningContainer.alpha = 0;
 
 	//setup times mom comes
 	var timer = 0;
-	var momComesInterval = randomInt(300, 600);
-	var momIsHereInterval = momComesInterval + 200;
+	var momComesInterval = randomInt(100, 300);
+	var momIsHereInterval = momComesInterval + randomInt(100, 300);
 	var gameOver = false;
 	var restartCount = 0;
 	var momResetInterval = momIsHereInterval + 200;
@@ -45,6 +49,10 @@ $( document ).ready(function() {
 	var windowText3 = PIXI.Texture.fromImage('static/img/window/sprite_3.png');
 	var windowText4 = PIXI.Texture.fromImage('static/img/window/sprite_4.png');
 	var windowText5 = PIXI.Texture.fromImage('static/img/window/sprite_5.png');
+	var fireText1 = PIXI.Texture.fromImage('static/img/fire/sprite_1.png');
+	var fireText2 = PIXI.Texture.fromImage('static/img/fire/sprite_2.png');
+	var fireText3 = PIXI.Texture.fromImage('static/img/fire/sprite_3.png');
+	var fireText4 = PIXI.Texture.fromImage('static/img/fire/sprite_4.png');
 
 	//var allTextures = [monsterText, bookText, roomText, dresserText, chestText, 
 						//cribBabyText, walkText1, walkText2, walkText3, climbText1, 
@@ -63,12 +71,17 @@ $( document ).ready(function() {
 	var walk = new PIXI.extras.MovieClip([walkText1, walkText2, walkText3])
 	var climb = new PIXI.extras.MovieClip([climbText1, climbText2, climbText3, climbText4, climbText5])
 	var windowSky = new PIXI.extras.MovieClip([windowText1, windowText2, windowText3, windowText4, windowText5])
+	var fire = new PIXI.extras.MovieClip([fireText1, fireText2, fireText3, fireText4])
 
 	//create text
 	var momComingText = new PIXI.Text('... (better hide)', {'fill':'white'});
 	var momHereText = new PIXI.Text('Go to sleep little one...', {'fill':'white'});
 	var caughtText = new PIXI.Text('You have been caught!', {'fill':'white'});
 	var babyMissingText = new PIXI.Text('The baby is gone and the parents find you in the room!', {'fill':'white'});
+	var calvinText = new PIXI.Text('Programming: Calvin Collins', {'fill':'white', wordWrap: true, wordWrapWidth: 200});
+	var heatherText = new PIXI.Text('Artwork: Heather Collins', {'fill':'white', wordWrap: true, wordWrapWidth: 200});
+	var willyText = new PIXI.Text('Original Music: William Collins', {'fill':'white', wordWrap: true, wordWrapWidth: 200});
+
 
 	//create keybindings
 	var left = keyboard(37),
@@ -88,7 +101,6 @@ $( document ).ready(function() {
 		chest
 	];
 
-	resetGame();
 	// setup sounds
 	var mainTrack = new Howl({
 		urls: ['static/sound/ludumdaretrack.mp3'],
@@ -126,35 +138,28 @@ $( document ).ready(function() {
 		volume: 0.5,
 	});
 
+	resetGame();
+
 	//main loop
 	gameLoop();
 
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
 
-		if (timer === momComesInterval){
-			footstepsSound.play();
-			//momComingText.visible = true;
-		}
-		if (timer === momIsHereInterval){
+		if (gameWin){
 			footstepsSound.stop();
-			if (!isHiding){
-				gameOver = true;
-				restartCount = 0;
-				screamSound.play();
-			} else if (babyTaken){
-				babyMissing = true;
-				gameOver = true;
-				restartCount = 0;
-				momComingText.visible = false;
-				screamSound.play();
-			} else {
-				//momComingText.visible = false;
-				//momHereText.visible = true;
-				momReset = true;
+			giggleSound.stop();
+			if (restartCount === 1000){
+				fireSound.fade(0.5, 0.1, 100);
+				resetGame();	
 			}
+			if (Math.round(winningContainer.alpha * 100) / 100 !== 1.00){
+				winningContainer.alpha += 0.01;
+			}
+			restartCount += 1;
 		}
-		if (gameOver){
+
+		else if (gameOver){
 			if (restartCount === 500){
 				resetGame();	
 			}
@@ -169,19 +174,39 @@ $( document ).ready(function() {
 				babyMissingText.visible = false;
 			}
 			restartCount += 1;
-
-		}
-
-		if (gameWin){
-			console.log("I win");
-		}
-
-		if (momReset){
+		} else if (momReset){
 			if (timer === momResetInterval){
 				momHereText.visible = false;
 				timer = 0;
+				momReset = false;
+			}
+		} else {
+
+			if (timer === momComesInterval){
+				footstepsSound.play();
+				//momComingText.visible = true;
+			}
+
+			if (timer === momIsHereInterval){
+				footstepsSound.stop();
+				if (!isHiding){
+					gameOver = true;
+					restartCount = 0;
+					screamSound.play();
+				} else if (babyTaken){
+					babyMissing = true;
+					gameOver = true;
+					restartCount = 0;
+					momComingText.visible = false;
+					screamSound.play();
+				} else {
+					//momComingText.visible = false;
+					//momHereText.visible = true;
+					momReset = true;
+				}
 			}
 		}
+
 
 		moveMonster();
 		hideMonster();
@@ -435,7 +460,8 @@ $( document ).ready(function() {
 		if (monster.x > 680 && monster.x < 735 && monster.y < 230 && monster.y > 185){
 			giggleSound.play()
 			takeBaby();
-		} else if (monster.x > 150 && monster.x < 250 && monster.y < 300 && babyTaken){
+		} else if (monster.x > 150 && monster.x < 250 && monster.y < 300 && babyTaken && !gameOver){
+			fireSound.play();
 			gameWin = true;
 		} else {
 			hidePressed = true;
@@ -572,6 +598,38 @@ $( document ).ready(function() {
 		windowSky.play();
 	}
 
+	function setupFire(){
+		fire.anchor.x = 0.5;
+		fire.anchor.y = 0.5;
+		fire.x = 400;
+		fire.y = 200;
+		fire.scale.x = 4;
+		fire.scale.y = 4;
+		fire.animationSpeed = 0.2;
+		fire.play();
+	}
+
+	function setupCalvin(){
+		calvinText.anchor.x = 0.5;
+		calvinText.anchor.y = 0.5;
+		calvinText.x = 120;
+		calvinText.y = 100;
+	}
+
+	function setupHeather(){
+		heatherText.anchor.x = 0.5;
+		heatherText.anchor.y = 0.5;
+		heatherText.x = 120;
+		heatherText.y = 300;
+	}
+
+	function setupWilly(){
+		willyText.anchor.x = 0.5;
+		willyText.anchor.y = 0.5;
+		willyText.x = 680;
+		willyText.y = 200;
+	}
+
 	function isCollision(r1, r2) {
 		if (monster.scale.x < 0) {
 			return !(r2.x > (r1.x - r1.width / 2) || 
@@ -610,6 +668,7 @@ $( document ).ready(function() {
 		screenFadeContainer.scale.x = screenFadeContainer.scale.y = 1;
 		screenFadeContainer.alpha = 0;
 		fullSceenCover = rectangle(0, 0, 800, 400, 0x000000, 0x000000, 0 );
+		winningContainer.alpha = 0;
 
 		timer = 0;
 		momComesInterval = randomInt(300, 600);
@@ -629,6 +688,12 @@ $( document ).ready(function() {
 		screenFadeContainer.addChild(fullSceenCover); 
 		screenFadeContainer.addChild(caughtText);
 		screenFadeContainer.addChild(babyMissingText);
+
+		winningContainer.addChild(winSceenCover);
+		winningContainer.addChild(fire);
+		winningContainer.addChild(calvinText);
+		winningContainer.addChild(heatherText);
+		winningContainer.addChild(willyText);
 		
 		setupMonster();
 		setupBook();
@@ -644,6 +709,10 @@ $( document ).ready(function() {
 		setupCaught();
 		setupBabyText();
 		setupBaby();
+		setupFire();
+		setupCalvin();
+		setupHeather();
+		setupWilly();
 
 		//add sprites to stage
 		stage.addChild(room);
@@ -660,6 +729,9 @@ $( document ).ready(function() {
 		stage.addChild(momHereText);
 
 		stage.addChild(screenFadeContainer);
+		stage.addChild(winningContainer);
+
+
 	}
 
 });
