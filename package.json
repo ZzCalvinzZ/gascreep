@@ -1,0 +1,25 @@
+{
+  "name": "gascreep",
+  "version": "1.0.0",
+  "homepage": "https://github.com/ZzCalvinzZ/gascreep#readme",
+  "description": "gascreep game",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gh-pages -d ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZzCalvinzZ/gascreep.git"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "author": "ZzCalvinzZ",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZzCalvinzZ/gascreep/issues"
+  },
+  "devDependencies": {
+    "gh-pages": "^2.2.0"
+  }
+}
