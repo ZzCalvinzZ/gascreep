@@ -1,7 +1,6 @@
 {
   "name": "gascreep",
   "version": "1.0.0",
-  "homepage": "https://github.com/ZzCalvinzZ/gascreep#readme",
   "description": "gascreep game",
   "main": "index.js",
   "scripts": {
